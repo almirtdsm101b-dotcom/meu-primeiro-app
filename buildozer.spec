@@ -1,15 +1,16 @@
-
 [app]
 
-title = Meu Primeiro App
+title = CONTROLE DE FRETE
 
-package.name = meuprimeiroapp
+package.name = controledefrete
 
 package.domain = org.almir
 
 source.dir = .
 
 source.include_exts = py,png,jpg,kv,atlas
+
+icon.filename = %(source.dir)s/icone.png
 
 version = 0.1
 
