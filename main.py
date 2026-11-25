@@ -53,9 +53,21 @@ def _fmt_virgula(valor, decimais=2):
     return f"{valor:.{decimais}f}".replace(".", ",")
 
 
+class CampoTexto(TextInput):
+    def on_touch_down(self, touch):
+        dentro = self.collide_point(*touch.pos)
+        ja_focado = self.focus
+        resultado = super().on_touch_down(touch)
+        if dentro and ja_focado:
+            self.focus = False
+            Clock.schedule_once(lambda *_: setattr(self, "focus", True), 0.06)
+        return resultado
+
+
 class ControleFreteApp(App):
     def build(self):
         Window.clearcolor = (0.043, 0.051, 0.067, 1)
+        Window.softinput_mode = "pan"
 
         self.mes_atual = "Novembro / 2026"
         self.media_pedida = 2.0
@@ -183,8 +195,8 @@ class ControleFreteApp(App):
             background_normal="",
             background_color=(0.200, 0.255, 0.333, 1),
         )
-        self.btn_tipo_carr.bind(on_press=lambda *_: self._set_tipo("carregado"))
-        self.btn_tipo_vazio.bind(on_press=lambda *_: self._set_tipo("vazio"))
+        self.btn_tipo_carr.bind(on_release=lambda *_: self._set_tipo("carregado"))
+        self.btn_tipo_vazio.bind(on_release=lambda *_: self._set_tipo("vazio"))
         box_tipo.add_widget(self.btn_tipo_carr)
         box_tipo.add_widget(self.btn_tipo_vazio)
         card_viagem.add_widget(box_tipo)
@@ -227,7 +239,7 @@ class ControleFreteApp(App):
             background_color=(0.145, 0.388, 0.922, 1),
             color=(1, 1, 1, 1),
         )
-        self.btn_salvar_viagem.bind(on_press=self.salvar_viagem)
+        self.btn_salvar_viagem.bind(on_release=self.salvar_viagem)
         card_viagem.add_widget(self.btn_salvar_viagem)
 
         self.container.add_widget(card_viagem)
@@ -253,7 +265,7 @@ class ControleFreteApp(App):
             background_color=(0.200, 0.255, 0.333, 1),
             color=(1, 1, 1, 1),
         )
-        btn_diesel.bind(on_press=self.salvar_diesel)
+        btn_diesel.bind(on_release=self.salvar_diesel)
         card_diesel.add_widget(btn_diesel)
         self.container.add_widget(card_diesel)
 
@@ -284,7 +296,7 @@ class ControleFreteApp(App):
             background_color=(0.063, 0.725, 0.506, 1),
             color=(1, 1, 1, 1),
         )
-        self.btn_resumo_relatorio.bind(on_press=self.abrir_relatorio_mes)
+        self.btn_resumo_relatorio.bind(on_release=self.abrir_relatorio_mes)
         self.card_historico.add_widget(self.btn_resumo_relatorio)
 
         self.container.add_widget(self.card_historico)
@@ -306,7 +318,7 @@ class ControleFreteApp(App):
             background_color=(0.118, 0.149, 0.212, 1),
             color=(0.850, 0.880, 0.920, 1),
         )
-        self.btn_toggle_avancado.bind(on_press=self.alternar_avancado)
+        self.btn_toggle_avancado.bind(on_release=self.alternar_avancado)
         self.card_avancado.add_widget(self.btn_toggle_avancado)
 
         self.box_corpo_avancado = BoxLayout(
@@ -357,13 +369,13 @@ class ControleFreteApp(App):
         return raiz
 
     def on_resume(self):
-        Clock.schedule_once(lambda *_: self._resetar_foco_inputs(), 0.05)
+        Clock.schedule_once(lambda *_: self._soltar_todos_inputs(), 0.05)
 
     def _ao_ganhar_foco_janela(self, window, focused):
         if focused:
-            Clock.schedule_once(lambda *_: self._resetar_foco_inputs(), 0.05)
+            Clock.schedule_once(lambda *_: self._soltar_todos_inputs(), 0.05)
 
-    def _resetar_foco_inputs(self):
+    def _soltar_todos_inputs(self):
         for campo in self._inputs:
             campo.focus = False
 
@@ -460,7 +472,7 @@ class ControleFreteApp(App):
         return lbl
 
     def _criar_input(self, hint, input_filter=None):
-        campo = TextInput(
+        campo = CampoTexto(
             hint_text=hint,
             input_filter=input_filter,
             multiline=False,
@@ -506,7 +518,7 @@ class ControleFreteApp(App):
         return lbl_val
 
     def _set_tipo(self, tipo):
-        self._resetar_foco_inputs()
+        self._soltar_todos_inputs()
         self.tipo_viagem = tipo
         if tipo == "carregado":
             self.btn_tipo_carr.state = "down"
@@ -525,7 +537,7 @@ class ControleFreteApp(App):
         self.btn_salvar_viagem.text = "Salvar Viagem"
 
     def alternar_avancado(self, instance):
-        self._resetar_foco_inputs()
+        self._soltar_todos_inputs()
         self.avancado_aberto = not self.avancado_aberto
         if self.avancado_aberto:
             self.box_corpo_avancado.height = dp(206)
@@ -543,14 +555,14 @@ class ControleFreteApp(App):
             self.atualizar_tudo()
 
     def ao_mudar_mes(self, spinner, texto_mes):
-        self._resetar_foco_inputs()
+        self._soltar_todos_inputs()
         self.mes_atual = texto_mes
         self.lbl_aviso.text = ""
         self._limpar_form_viagem()
         self.atualizar_tudo()
 
     def salvar_viagem(self, instance):
-        self._resetar_foco_inputs()
+        self._soltar_todos_inputs()
         rota = self.input_rota.text.strip()
         km_ini = _parse_numero(self.input_km_ini.text)
         km_fim = _parse_numero(self.input_km_fim.text)
@@ -587,7 +599,7 @@ class ControleFreteApp(App):
         self.atualizar_tudo()
 
     def salvar_diesel(self, instance):
-        self._resetar_foco_inputs()
+        self._soltar_todos_inputs()
         litros = _parse_numero(self.input_diesel.text)
         if litros is None or litros <= 0:
             self.lbl_aviso.text = "Informe a quantidade de litros de diesel."
@@ -599,7 +611,7 @@ class ControleFreteApp(App):
         self.atualizar_tudo()
 
     def iniciar_edicao(self, idx):
-        self._resetar_foco_inputs()
+        self._soltar_todos_inputs()
         viagens = self.dados[self.mes_atual]["viagens"]
         if not (0 <= idx < len(viagens)):
             return
@@ -614,7 +626,7 @@ class ControleFreteApp(App):
         self.btn_salvar_viagem.text = "Salvar Alteração"
 
     def excluir_item(self, categoria, idx):
-        self._resetar_foco_inputs()
+        self._soltar_todos_inputs()
         lista = self.dados[self.mes_atual][categoria]
         if not (0 <= idx < len(lista)):
             return
@@ -686,7 +698,7 @@ class ControleFreteApp(App):
         }
 
     def abrir_relatorio_mes(self, instance):
-        self._resetar_foco_inputs()
+        self._soltar_todos_inputs()
         m = self._calcular_metricas_mes(self.dados[self.mes_atual])
         texto = (
             f"Mês: {self.mes_atual}\n"
@@ -729,7 +741,7 @@ class ControleFreteApp(App):
             size_hint=(0.9, 0.72),
             background_color=(0.082, 0.098, 0.133, 1),
         )
-        btn_fechar.bind(on_press=popup.dismiss)
+        btn_fechar.bind(on_release=popup.dismiss)
         popup.open()
 
     def _construir_historico(self, mes_data):
@@ -760,7 +772,7 @@ class ControleFreteApp(App):
                 padding=[dp(10), dp(8)],
                 spacing=dp(8),
                 size_hint_y=None,
-                height=dp(70),
+                height=dp(74),
             )
             with linha.canvas.before:
                 Color(0.055, 0.067, 0.094, 1)
@@ -782,28 +794,38 @@ class ControleFreteApp(App):
             btn_edit = Button(
                 text="Editar",
                 size_hint=(None, None),
-                size=(dp(68), dp(40)),
-                font_size=sp(12.5),
+                size=(dp(76), dp(44)),
+                font_size=sp(13),
                 bold=True,
                 background_normal="",
                 background_color=(0.145, 0.388, 0.922, 1),
                 color=(1, 1, 1, 1),
                 pos_hint={"center_y": 0.5},
             )
-            btn_edit.bind(on_press=lambda _, i=idx: self.iniciar_edicao(i))
+            btn_edit.bind(
+                on_release=lambda _, i=idx: (
+                    self._soltar_todos_inputs(),
+                    self.iniciar_edicao(i),
+                )
+            )
 
             btn_del = Button(
                 text="Excluir",
                 size_hint=(None, None),
-                size=(dp(70), dp(40)),
-                font_size=sp(12.5),
+                size=(dp(78), dp(44)),
+                font_size=sp(13),
                 bold=True,
                 background_normal="",
                 background_color=(0.860, 0.240, 0.240, 1),
                 color=(1, 1, 1, 1),
                 pos_hint={"center_y": 0.5},
             )
-            btn_del.bind(on_press=lambda _, i=idx: self.excluir_item("viagens", i))
+            btn_del.bind(
+                on_release=lambda _, i=idx: (
+                    self._soltar_todos_inputs(),
+                    self.excluir_item("viagens", i),
+                )
+            )
 
             linha.add_widget(info)
             linha.add_widget(btn_edit)
@@ -817,7 +839,7 @@ class ControleFreteApp(App):
                 padding=[dp(10), dp(8)],
                 spacing=dp(8),
                 size_hint_y=None,
-                height=dp(60),
+                height=dp(64),
             )
             with linha_d.canvas.before:
                 Color(0.055, 0.067, 0.094, 1)
@@ -839,15 +861,20 @@ class ControleFreteApp(App):
             btn_del_d = Button(
                 text="Excluir",
                 size_hint=(None, None),
-                size=(dp(70), dp(40)),
-                font_size=sp(12.5),
+                size=(dp(78), dp(44)),
+                font_size=sp(13),
                 bold=True,
                 background_normal="",
                 background_color=(0.860, 0.240, 0.240, 1),
                 color=(1, 1, 1, 1),
                 pos_hint={"center_y": 0.5},
             )
-            btn_del_d.bind(on_press=lambda _, i=idx: self.excluir_item("diesel", i))
+            btn_del_d.bind(
+                on_release=lambda _, i=idx: (
+                    self._soltar_todos_inputs(),
+                    self.excluir_item("diesel", i),
+                )
+            )
 
             linha_d.add_widget(info_d)
             linha_d.add_widget(btn_del_d)
