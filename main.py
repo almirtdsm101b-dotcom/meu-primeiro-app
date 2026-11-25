@@ -769,15 +769,20 @@ class ControleFreteApp(App):
 
             linha = BoxLayout(
                 orientation="horizontal",
-                padding=[dp(10), dp(8)],
                 spacing=dp(8),
                 size_hint_y=None,
-                height=dp(74),
+                height=dp(76),
             )
-            with linha.canvas.before:
+
+            cartao_info = BoxLayout(
+                orientation="vertical",
+                padding=[dp(10), dp(8)],
+                size_hint=(1, 1),
+            )
+            with cartao_info.canvas.before:
                 Color(0.055, 0.067, 0.094, 1)
-                rect = Rectangle(pos=linha.pos, size=linha.size)
-            linha.bind(
+                rect = Rectangle(pos=cartao_info.pos, size=cartao_info.size)
+            cartao_info.bind(
                 pos=lambda inst, val, r=rect: setattr(r, "pos", val),
                 size=lambda inst, val, r=rect: setattr(r, "size", val),
             )
@@ -790,11 +795,12 @@ class ControleFreteApp(App):
                 valign="middle",
             )
             info.bind(size=info.setter("text_size"))
+            cartao_info.add_widget(info)
 
             btn_edit = Button(
                 text="Editar",
                 size_hint=(None, None),
-                size=(dp(76), dp(44)),
+                size=(dp(76), dp(46)),
                 font_size=sp(13),
                 bold=True,
                 background_normal="",
@@ -812,7 +818,7 @@ class ControleFreteApp(App):
             btn_del = Button(
                 text="Excluir",
                 size_hint=(None, None),
-                size=(dp(78), dp(44)),
+                size=(dp(78), dp(46)),
                 font_size=sp(13),
                 bold=True,
                 background_normal="",
@@ -827,7 +833,7 @@ class ControleFreteApp(App):
                 )
             )
 
-            linha.add_widget(info)
+            linha.add_widget(cartao_info)
             linha.add_widget(btn_edit)
             linha.add_widget(btn_del)
             self.box_historico.add_widget(linha)
@@ -836,15 +842,20 @@ class ControleFreteApp(App):
             litros = float(d.get("litros", 0))
             linha_d = BoxLayout(
                 orientation="horizontal",
-                padding=[dp(10), dp(8)],
                 spacing=dp(8),
                 size_hint_y=None,
-                height=dp(64),
+                height=dp(66),
             )
-            with linha_d.canvas.before:
+
+            cartao_d = BoxLayout(
+                orientation="vertical",
+                padding=[dp(10), dp(8)],
+                size_hint=(1, 1),
+            )
+            with cartao_d.canvas.before:
                 Color(0.055, 0.067, 0.094, 1)
-                rect_d = Rectangle(pos=linha_d.pos, size=linha_d.size)
-            linha_d.bind(
+                rect_d = Rectangle(pos=cartao_d.pos, size=cartao_d.size)
+            cartao_d.bind(
                 pos=lambda inst, val, r=rect_d: setattr(r, "pos", val),
                 size=lambda inst, val, r=rect_d: setattr(r, "size", val),
             )
@@ -857,11 +868,12 @@ class ControleFreteApp(App):
                 valign="middle",
             )
             info_d.bind(size=info_d.setter("text_size"))
+            cartao_d.add_widget(info_d)
 
             btn_del_d = Button(
                 text="Excluir",
                 size_hint=(None, None),
-                size=(dp(78), dp(44)),
+                size=(dp(78), dp(46)),
                 font_size=sp(13),
                 bold=True,
                 background_normal="",
@@ -876,7 +888,7 @@ class ControleFreteApp(App):
                 )
             )
 
-            linha_d.add_widget(info_d)
+            linha_d.add_widget(cartao_d)
             linha_d.add_widget(btn_del_d)
             self.box_historico.add_widget(linha_d)
 
