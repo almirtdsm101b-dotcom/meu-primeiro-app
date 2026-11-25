@@ -27,6 +27,9 @@ android.minapi = 23
 
 android.archs = arm64-v8a
 
+# Aceitar licencas do Android SDK
+android.accept_sdk_license = True
+
 [buildozer]
 
 log_level = 2
