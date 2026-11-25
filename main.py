@@ -58,29 +58,26 @@ class CampoTexto(TextInput):
         super().__init__(**kwargs)
         self._bloqueio_foco = False
 
-    def bloquear_foco_temporario(self, duracao=0.18):
+    def bloquear_foco_temporario(self, duracao=0.22):
         self._bloqueio_foco = True
         self.focus = False
+        Window.release_all_keyboards()
         Clock.schedule_once(self._liberar_foco, duracao)
 
     def _liberar_foco(self, *_):
         self._bloqueio_foco = False
 
+    def on_focus(self, instance, value):
+        if value and self._bloqueio_foco:
+            self.focus = False
+            Window.release_all_keyboards()
+
     def on_touch_down(self, touch):
         if self._bloqueio_foco:
             self.focus = False
+            Window.release_all_keyboards()
             return False
-        dentro = self.collide_point(*touch.pos)
-        ja_focado = self.focus
-        resultado = super().on_touch_down(touch)
-        if dentro and ja_focado and not self._bloqueio_foco:
-            self.focus = False
-            Clock.schedule_once(self._reabrir_teclado_se_liberado, 0.06)
-        return resultado
-
-    def _reabrir_teclado_se_liberado(self, *_):
-        if not self._bloqueio_foco:
-            self.focus = True
+        return super().on_touch_down(touch)
 
 
 class ControleFreteApp(App):
@@ -394,7 +391,8 @@ class ControleFreteApp(App):
         if focused:
             Clock.schedule_once(lambda *_: self._soltar_todos_inputs(0.20), 0.05)
 
-    def _soltar_todos_inputs(self, bloqueio=0.18):
+    def _soltar_todos_inputs(self, bloqueio=0.22):
+        Window.release_all_keyboards()
         for campo in self._inputs:
             campo.focus = False
             if bloqueio and bloqueio > 0:
@@ -814,6 +812,7 @@ class ControleFreteApp(App):
                 height=dp(76),
             )
 
+            # Bloco apenas visual da viagem (não clicável)
             cartao_info = BoxLayout(
                 orientation="vertical",
                 padding=[dp(10), dp(8)],
