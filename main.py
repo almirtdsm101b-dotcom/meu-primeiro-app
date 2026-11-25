@@ -4,6 +4,7 @@ import os
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse, Line, RoundedRectangle
+from kivy.metrics import dp, sp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
@@ -21,6 +22,18 @@ MESES = [
     "Outubro / 2026",
     "Novembro / 2026",
     "Dezembro / 2026",
+    "Janeiro / 2027",
+    "Fevereiro / 2027",
+    "Março / 2027",
+    "Abril / 2027",
+    "Maio / 2027",
+    "Junho / 2027",
+    "Julho / 2027",
+    "Agosto / 2027",
+    "Setembro / 2027",
+    "Outubro / 2027",
+    "Novembro / 2027",
+    "Dezembro / 2027",
 ]
 
 
@@ -29,7 +42,7 @@ class CardBox(BoxLayout):
         self,
         bg_color=(0.071, 0.086, 0.118, 1),
         border_color=(0.165, 0.192, 0.247, 1),
-        radius=14,
+        radius=dp(14),
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -50,7 +63,7 @@ class CardBox(BoxLayout):
                     self.height,
                     self._radius,
                 ),
-                width=1.0,
+                width=dp(1.1),
             )
         self.bind(pos=self._atualizar_canvas, size=self._atualizar_canvas)
 
@@ -70,44 +83,58 @@ class CampoTextoEstilizado(TextInput):
     def __init__(self, **kwargs):
         super().__init__(
             multiline=False,
-            font_size="15sp",
+            font_size=sp(15.5),
             size_hint_y=None,
-            height=48,
+            height=dp(54),
             background_normal="",
             background_active="",
             background_color=(0, 0, 0, 0),
             foreground_color=(0.945, 0.953, 0.961, 1),
-            hint_text_color=(0.450, 0.500, 0.580, 1),
+            hint_text_color=(0.460, 0.510, 0.590, 1),
             cursor_color=(0.231, 0.510, 0.965, 1),
-            padding=[14, 14, 14, 12],
+            padding=[dp(14), dp(14), dp(14), dp(12)],
             **kwargs,
         )
         with self.canvas.before:
             Color(0.055, 0.067, 0.094, 1)
-            self._bg = RoundedRectangle(pos=self.pos, size=self.size, radius=[8])
-            Color(0.180, 0.212, 0.275, 1)
+            self._bg = RoundedRectangle(
+                pos=self.pos, size=self.size, radius=[dp(9)]
+            )
+            Color(0.185, 0.218, 0.282, 1)
             self._borda = Line(
-                rounded_rectangle=(self.x, self.y, self.width, self.height, 8),
-                width=1.0,
+                rounded_rectangle=(
+                    self.x,
+                    self.y,
+                    self.width,
+                    self.height,
+                    dp(9),
+                ),
+                width=dp(1.1),
             )
         self.bind(pos=self._sync_canvas, size=self._sync_canvas)
 
     def _sync_canvas(self, *args):
         self._bg.pos = self.pos
         self._bg.size = self.size
-        self._borda.rounded_rectangle = (self.x, self.y, self.width, self.height, 8)
+        self._borda.rounded_rectangle = (
+            self.x,
+            self.y,
+            self.width,
+            self.height,
+            dp(9),
+        )
 
 
 class BotaoTipoRadio(Button):
     def __init__(self, texto, selecionado=False, **kwargs):
         super().__init__(
-            text=f"   {texto}",
+            text=f"    {texto}",
             halign="left",
             valign="middle",
-            font_size="15sp",
+            font_size=sp(15),
             bold=False,
             size_hint_y=None,
-            height=46,
+            height=dp(50),
             background_normal="",
             background_down="",
             background_color=(0, 0, 0, 0),
@@ -115,11 +142,13 @@ class BotaoTipoRadio(Button):
             **kwargs,
         )
         self.selecionado = selecionado
-        self.bind(size=self._ajustar_texto, pos=self._desenhar, state=self._desenhar)
+        self.bind(
+            size=self._ajustar_texto, pos=self._desenhar, state=self._desenhar
+        )
         self._desenhar()
 
     def _ajustar_texto(self, *args):
-        self.text_size = (self.width - 36, self.height)
+        self.text_size = (self.width - dp(42), self.height)
         self._desenhar()
 
     def definir_selecionado(self, ativo):
@@ -135,33 +164,39 @@ class BotaoTipoRadio(Button):
                 anel_cor = (0.231, 0.510, 0.965, 1)
             else:
                 Color(0.055, 0.067, 0.094, 1)
-                borda_cor = (0.180, 0.212, 0.275, 1)
+                borda_cor = (0.185, 0.218, 0.282, 1)
                 anel_cor = (0.520, 0.560, 0.630, 1)
 
-            RoundedRectangle(pos=self.pos, size=self.size, radius=[8])
+            RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(9)])
             Color(*borda_cor)
             Line(
-                rounded_rectangle=(self.x, self.y, self.width, self.height, 8),
-                width=1.1 if self.selecionado else 1.0,
+                rounded_rectangle=(
+                    self.x,
+                    self.y,
+                    self.width,
+                    self.height,
+                    dp(9),
+                ),
+                width=dp(1.2) if self.selecionado else dp(1.0),
             )
 
-            raio = 8
-            cx = self.x + 18
+            raio = dp(8)
+            cx = self.x + dp(20)
             cy = self.y + self.height / 2
             Color(*anel_cor)
-            Line(circle=(cx, cy, raio), width=1.6)
+            Line(circle=(cx, cy, raio), width=dp(1.6))
             if self.selecionado:
                 Color(0.231, 0.510, 0.965, 1)
-                Ellipse(pos=(cx - 4.5, cy - 4.5), size=(9, 9))
+                Ellipse(pos=(cx - dp(4.5), cy - dp(4.5)), size=(dp(9), dp(9)))
 
 
 class BotaoPrimario(Button):
     def __init__(self, cor_fundo=(0.145, 0.388, 0.922, 1), **kwargs):
         super().__init__(
-            font_size="15.5sp",
+            font_size=sp(15.5),
             bold=True,
             size_hint_y=None,
-            height=48,
+            height=dp(52),
             background_normal="",
             background_down="",
             background_color=(0, 0, 0, 0),
@@ -171,7 +206,9 @@ class BotaoPrimario(Button):
         self._cor_fundo = cor_fundo
         with self.canvas.before:
             Color(*self._cor_fundo)
-            self._rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[9])
+            self._rect = RoundedRectangle(
+                pos=self.pos, size=self.size, radius=[dp(10)]
+            )
         self.bind(pos=self._sync, size=self._sync)
 
     def _sync(self, *args):
@@ -208,33 +245,45 @@ class ControleFreteApp(App):
 
         raiz = ScrollView(do_scroll_x=False, do_scroll_y=True)
 
+        faixa_externa = BoxLayout(
+            orientation="horizontal",
+            padding=[dp(22), dp(24), dp(22), dp(42)],
+            size_hint_y=None,
+        )
+        faixa_externa.bind(minimum_height=faixa_externa.setter("height"))
+
+        self._esq_spacer = Widget(size_hint_x=None, width=0)
+        self._dir_spacer = Widget(size_hint_x=None, width=0)
+
         self.container = BoxLayout(
             orientation="vertical",
-            padding=[16, 18, 16, 36],
-            spacing=16,
+            spacing=dp(18),
             size_hint_y=None,
         )
         self.container.bind(minimum_height=self.container.setter("height"))
+        Window.bind(size=self._ajustar_largura_central)
 
-        # Respiro superior para não ficar colado no topo da tela
-        self.container.add_widget(Widget(size_hint_y=None, height=26))
+        faixa_externa.add_widget(self._esq_spacer)
+        faixa_externa.add_widget(self.container)
+        faixa_externa.add_widget(self._dir_spacer)
 
-        # Título centralizado limpo, igual ao HTML
+        self.container.add_widget(Widget(size_hint_y=None, height=dp(32)))
+
         titulo = Label(
             text="Controle de Frete",
-            font_size="21sp",
+            font_size=sp(22),
             bold=True,
             color=(0.945, 0.953, 0.961, 1),
             size_hint_y=None,
-            height=38,
+            height=dp(42),
         )
         self.container.add_widget(titulo)
 
         # Card: Mês de Referência
         card_mes = CardBox(
             orientation="vertical",
-            padding=[16, 16, 16, 16],
-            spacing=12,
+            padding=[dp(18), dp(18), dp(18), dp(18)],
+            spacing=dp(12),
             size_hint_y=None,
         )
         card_mes.bind(minimum_height=card_mes.setter("height"))
@@ -244,8 +293,8 @@ class ControleFreteApp(App):
             text=self.mes_atual,
             values=MESES,
             size_hint_y=None,
-            height=48,
-            font_size="15sp",
+            height=dp(52),
+            font_size=sp(15.5),
             background_normal="",
             background_down="",
             background_color=(0.055, 0.067, 0.094, 1),
@@ -254,18 +303,20 @@ class ControleFreteApp(App):
         with self.spinner_mes.canvas.before:
             Color(0.055, 0.067, 0.094, 1)
             self._sp_bg = RoundedRectangle(
-                pos=self.spinner_mes.pos, size=self.spinner_mes.size, radius=[8]
+                pos=self.spinner_mes.pos,
+                size=self.spinner_mes.size,
+                radius=[dp(9)],
             )
-            Color(0.180, 0.212, 0.275, 1)
+            Color(0.185, 0.218, 0.282, 1)
             self._sp_borda = Line(
                 rounded_rectangle=(
                     self.spinner_mes.x,
                     self.spinner_mes.y,
                     self.spinner_mes.width,
                     self.spinner_mes.height,
-                    8,
+                    dp(9),
                 ),
-                width=1.0,
+                width=dp(1.1),
             )
         self.spinner_mes.bind(pos=self._sync_spinner, size=self._sync_spinner)
         self.spinner_mes.bind(text=self.ao_mudar_mes)
@@ -275,14 +326,16 @@ class ControleFreteApp(App):
         # Card: Resumo do Mês
         card_resumo = CardBox(
             orientation="vertical",
-            padding=[16, 16, 16, 16],
-            spacing=12,
+            padding=[dp(18), dp(18), dp(18), dp(18)],
+            spacing=dp(12),
             size_hint_y=None,
         )
         card_resumo.bind(minimum_height=card_resumo.setter("height"))
         card_resumo.add_widget(self._criar_titulo_card("RESUMO DO MÊS"))
 
-        grid = GridLayout(cols=2, spacing=[8, 10], size_hint_y=None, height=226)
+        grid = GridLayout(
+            cols=2, spacing=[dp(10), dp(10)], size_hint_y=None, height=dp(240)
+        )
         self.lbl_fat_valor = self._criar_linha_resumo(
             grid, "Total Faturado:", "R$ 0.00", (0.063, 0.725, 0.506, 1)
         )
@@ -307,18 +360,20 @@ class ControleFreteApp(App):
         # Card: Nova Viagem / Trecho
         card_viagem = CardBox(
             orientation="vertical",
-            padding=[16, 16, 16, 16],
-            spacing=12,
+            padding=[dp(18), dp(18), dp(18), dp(18)],
+            spacing=dp(12),
             size_hint_y=None,
         )
         card_viagem.bind(minimum_height=card_viagem.setter("height"))
         card_viagem.add_widget(self._criar_titulo_card("NOVA VIAGEM / TRECHO"))
 
         card_viagem.add_widget(self._criar_rotulo("Rota / Descrição"))
-        self.input_rota = CampoTextoEstilizado(hint_text="Ex: Sorriso para Paranaguá")
+        self.input_rota = CampoTextoEstilizado(
+            hint_text="Ex: Sorriso para Paranaguá"
+        )
         card_viagem.add_widget(self.input_rota)
 
-        box_tipo = BoxLayout(spacing=12, size_hint_y=None, height=46)
+        box_tipo = BoxLayout(spacing=dp(12), size_hint_y=None, height=dp(50))
         self.btn_tipo_carr = BotaoTipoRadio("Carregado", selecionado=True)
         self.btn_tipo_vazio = BotaoTipoRadio("Vazio", selecionado=False)
         self.btn_tipo_carr.bind(on_press=lambda *_: self._set_tipo("carregado"))
@@ -327,15 +382,19 @@ class ControleFreteApp(App):
         box_tipo.add_widget(self.btn_tipo_vazio)
         card_viagem.add_widget(box_tipo)
 
-        box_km = BoxLayout(spacing=12, size_hint_y=None, height=74)
-        col_ini = BoxLayout(orientation="vertical", spacing=6)
+        box_km = BoxLayout(spacing=dp(12), size_hint_y=None, height=dp(84))
+        col_ini = BoxLayout(orientation="vertical", spacing=dp(6))
         col_ini.add_widget(self._criar_rotulo("KM Início"))
-        self.input_km_ini = CampoTextoEstilizado(hint_text="0", input_filter="float")
+        self.input_km_ini = CampoTextoEstilizado(
+            hint_text="0", input_filter="float"
+        )
         col_ini.add_widget(self.input_km_ini)
 
-        col_fim = BoxLayout(orientation="vertical", spacing=6)
+        col_fim = BoxLayout(orientation="vertical", spacing=dp(6))
         col_fim.add_widget(self._criar_rotulo("KM Fim"))
-        self.input_km_fim = CampoTextoEstilizado(hint_text="0", input_filter="float")
+        self.input_km_fim = CampoTextoEstilizado(
+            hint_text="0", input_filter="float"
+        )
         col_fim.add_widget(self.input_km_fim)
 
         box_km.add_widget(col_ini)
@@ -343,15 +402,17 @@ class ControleFreteApp(App):
         card_viagem.add_widget(box_km)
 
         card_viagem.add_widget(self._criar_rotulo("Faturamento (R$)"))
-        self.input_fat = CampoTextoEstilizado(hint_text="0.00", input_filter="float")
+        self.input_fat = CampoTextoEstilizado(
+            hint_text="0.00", input_filter="float"
+        )
         card_viagem.add_widget(self.input_fat)
 
         self.lbl_aviso = Label(
             text="",
-            font_size="12.5sp",
+            font_size=sp(13),
             color=(0.988, 0.647, 0.647, 1),
             size_hint_y=None,
-            height=20,
+            height=dp(22),
         )
         card_viagem.add_widget(self.lbl_aviso)
 
@@ -367,8 +428,8 @@ class ControleFreteApp(App):
         # Card: Abastecimento de Diesel
         card_diesel = CardBox(
             orientation="vertical",
-            padding=[16, 16, 16, 16],
-            spacing=12,
+            padding=[dp(18), dp(18), dp(18), dp(18)],
+            spacing=dp(12),
             size_hint_y=None,
         )
         card_diesel.bind(minimum_height=card_diesel.setter("height"))
@@ -392,8 +453,8 @@ class ControleFreteApp(App):
         # Card: Histórico de Lançamentos + Fechamento
         self.card_historico = CardBox(
             orientation="vertical",
-            padding=[16, 16, 16, 16],
-            spacing=12,
+            padding=[dp(18), dp(18), dp(18), dp(18)],
+            spacing=dp(12),
             size_hint_y=None,
         )
         self.card_historico.bind(minimum_height=self.card_historico.setter("height"))
@@ -403,9 +464,9 @@ class ControleFreteApp(App):
 
         self.box_historico = BoxLayout(
             orientation="vertical",
-            spacing=10,
+            spacing=dp(10),
             size_hint_y=None,
-            height=38,
+            height=dp(40),
         )
         self.box_historico.bind(minimum_height=self.box_historico.setter("height"))
         self.card_historico.add_widget(self.box_historico)
@@ -424,8 +485,8 @@ class ControleFreteApp(App):
             bg_color=(0.059, 0.071, 0.098, 1),
             border_color=(0.140, 0.168, 0.220, 1),
             orientation="vertical",
-            padding=[16, 14, 16, 16],
-            spacing=10,
+            padding=[dp(18), dp(16), dp(18), dp(18)],
+            spacing=dp(12),
             size_hint_y=None,
         )
         self.card_avancado.bind(minimum_height=self.card_avancado.setter("height"))
@@ -439,7 +500,7 @@ class ControleFreteApp(App):
 
         self.box_corpo_avancado = BoxLayout(
             orientation="vertical",
-            spacing=8,
+            spacing=dp(10),
             size_hint_y=None,
             height=0,
             opacity=0,
@@ -453,7 +514,9 @@ class ControleFreteApp(App):
         self.input_media_pedida.bind(text=self.ao_alterar_media_pedida)
         self.box_corpo_avancado.add_widget(self.input_media_pedida)
 
-        grid_av = GridLayout(cols=2, spacing=[8, 8], size_hint_y=None, height=148)
+        grid_av = GridLayout(
+            cols=2, spacing=[dp(8), dp(8)], size_hint_y=None, height=dp(160)
+        )
         self.lbl_porc_carr = self._criar_linha_resumo(
             grid_av, "% Carregado:", "0,0%", (0.945, 0.953, 0.961, 1)
         )
@@ -467,18 +530,30 @@ class ControleFreteApp(App):
             grid_av, "Média Equivalente:", "0,00", (0.961, 0.620, 0.043, 1)
         )
         self.lbl_status_meta = self._criar_linha_resumo(
-            grid_av, "Situação vs Meta:", "Aguardando diesel", (0.580, 0.639, 0.722, 1)
+            grid_av,
+            "Situação vs Meta:",
+            "Aguardando diesel",
+            (0.580, 0.639, 0.722, 1),
         )
         self.box_corpo_avancado.add_widget(grid_av)
 
         self.card_avancado.add_widget(self.box_corpo_avancado)
         self.container.add_widget(self.card_avancado)
 
-        self.container.add_widget(Widget(size_hint_y=None, height=34))
-        raiz.add_widget(self.container)
+        self.container.add_widget(Widget(size_hint_y=None, height=dp(36)))
+        raiz.add_widget(faixa_externa)
 
+        self._ajustar_largura_central()
         self.atualizar_tudo()
         return raiz
+
+    def _ajustar_largura_central(self, *args):
+        largura_util = max(dp(240), Window.width - dp(44))
+        largura_alvo = min(largura_util, dp(460))
+        sobra = max(0.0, (largura_util - largura_alvo) / 2.0)
+        self._esq_spacer.width = sobra
+        self._dir_spacer.width = sobra
+        self.container.width = largura_alvo
 
     def _sync_spinner(self, *args):
         self._sp_bg.pos = self.spinner_mes.pos
@@ -488,7 +563,7 @@ class ControleFreteApp(App):
             self.spinner_mes.y,
             self.spinner_mes.width,
             self.spinner_mes.height,
-            8,
+            dp(9),
         )
 
     def _caminho_arquivo_dados(self):
@@ -534,13 +609,13 @@ class ControleFreteApp(App):
     def _criar_titulo_card(self, texto):
         lbl = Label(
             text=texto,
-            font_size="12.5sp",
+            font_size=sp(13),
             bold=True,
             color=(0.560, 0.600, 0.665, 1),
             halign="left",
             valign="middle",
             size_hint_y=None,
-            height=22,
+            height=dp(24),
         )
         lbl.bind(size=lbl.setter("text_size"))
         return lbl
@@ -548,12 +623,12 @@ class ControleFreteApp(App):
     def _criar_rotulo(self, texto):
         lbl = Label(
             text=texto,
-            font_size="13.5sp",
+            font_size=sp(14),
             color=(0.740, 0.775, 0.825, 1),
             halign="left",
             valign="middle",
             size_hint_y=None,
-            height=20,
+            height=dp(22),
         )
         lbl.bind(size=lbl.setter("text_size"))
         return lbl
@@ -561,24 +636,24 @@ class ControleFreteApp(App):
     def _criar_linha_resumo(self, grid, rotulo, inicial, cor_valor):
         lbl_nome = Label(
             text=rotulo,
-            font_size="14.5sp",
+            font_size=sp(14.5),
             color=(0.640, 0.680, 0.740, 1),
             halign="left",
             valign="middle",
             size_hint_y=None,
-            height=28,
+            height=dp(30),
         )
         lbl_nome.bind(size=lbl_nome.setter("text_size"))
 
         lbl_val = Label(
             text=inicial,
-            font_size="14.5sp",
+            font_size=sp(14.5),
             bold=True,
             color=cor_valor,
             halign="right",
             valign="middle",
             size_hint_y=None,
-            height=28,
+            height=dp(30),
         )
         lbl_val.bind(size=lbl_val.setter("text_size"))
 
@@ -603,7 +678,7 @@ class ControleFreteApp(App):
     def alternar_avancado(self, instance):
         self.avancado_aberto = not self.avancado_aberto
         if self.avancado_aberto:
-            self.box_corpo_avancado.height = 224
+            self.box_corpo_avancado.height = dp(246)
             self.box_corpo_avancado.opacity = 1
             self.btn_toggle_avancado.text = "[-] Cálculo Avançado de Desempenho"
         else:
@@ -649,7 +724,9 @@ class ControleFreteApp(App):
             "faturamento": fat,
         }
 
-        if self.indice_editando is not None and 0 <= self.indice_editando < len(viagens):
+        if self.indice_editando is not None and 0 <= self.indice_editando < len(
+            viagens
+        ):
             viagens[self.indice_editando] = item
         else:
             viagens.append(item)
@@ -698,7 +775,9 @@ class ControleFreteApp(App):
         total_litros = 0.0
 
         for v in mes_data["viagens"]:
-            dist = max(0.0, float(v.get("km_fim", 0)) - float(v.get("km_inicio", 0)))
+            dist = max(
+                0.0, float(v.get("km_fim", 0)) - float(v.get("km_inicio", 0))
+            )
             fat_total += float(v.get("faturamento", 0))
             if v.get("tipo") == "vazio":
                 km_vazio += dist
@@ -715,7 +794,9 @@ class ControleFreteApp(App):
         porc_carr = (km_carr / km_total) * 100.0 if km_total > 0 else 0.0
         porc_menos_50 = porc_carr - 50.0
         media_meta = (
-            (media_pedida - (porc_menos_50 * 0.014)) if km_total > 0 else media_pedida
+            (media_pedida - (porc_menos_50 * 0.014))
+            if km_total > 0
+            else media_pedida
         )
 
         media_equiv = media_pedida
@@ -764,23 +845,27 @@ class ControleFreteApp(App):
             f"Situação: {m['status_texto']}"
         )
 
-        conteudo_popup = BoxLayout(orientation="vertical", padding=16, spacing=14)
+        conteudo_popup = BoxLayout(
+            orientation="vertical", padding=dp(18), spacing=dp(14)
+        )
         lbl = Label(
             text=texto,
-            font_size="14.5sp",
+            font_size=sp(15),
             halign="left",
             valign="middle",
         )
         lbl.bind(size=lbl.setter("text_size"))
 
-        btn_fechar = BotaoPrimario(text="Fechar", cor_fundo=(0.145, 0.388, 0.922, 1))
+        btn_fechar = BotaoPrimario(
+            text="Fechar", cor_fundo=(0.145, 0.388, 0.922, 1)
+        )
         conteudo_popup.add_widget(lbl)
         conteudo_popup.add_widget(btn_fechar)
 
         popup = Popup(
             title=f"Fechamento - {self.mes_atual}",
             content=conteudo_popup,
-            size_hint=(0.9, 0.72),
+            size_hint=(0.9, 0.74),
             background_color=(0.071, 0.086, 0.118, 1),
         )
         btn_fechar.bind(on_press=popup.dismiss)
@@ -794,28 +879,30 @@ class ControleFreteApp(App):
         if not viagens and not diesels:
             vazio = Label(
                 text="Nenhum lançamento neste mês.",
-                font_size="13.5sp",
+                font_size=sp(14),
                 color=(0.450, 0.500, 0.580, 1),
                 size_hint_y=None,
-                height=34,
+                height=dp(36),
             )
             self.box_historico.add_widget(vazio)
             return
 
         for idx, v in enumerate(viagens):
-            dist = max(0.0, float(v.get("km_fim", 0)) - float(v.get("km_inicio", 0)))
+            dist = max(
+                0.0, float(v.get("km_fim", 0)) - float(v.get("km_inicio", 0))
+            )
             fat = float(v.get("faturamento", 0))
             tipo = v.get("tipo", "carregado")
 
             linha = CardBox(
                 bg_color=(0.055, 0.067, 0.094, 1),
-                border_color=(0.180, 0.212, 0.275, 1),
-                radius=10,
+                border_color=(0.185, 0.218, 0.282, 1),
+                radius=dp(10),
                 orientation="horizontal",
-                padding=[12, 10, 12, 10],
-                spacing=8,
+                padding=[dp(12), dp(10), dp(12), dp(10)],
+                spacing=dp(8),
                 size_hint_y=None,
-                height=72,
+                height=dp(76),
             )
 
             info = Label(
@@ -824,7 +911,7 @@ class ControleFreteApp(App):
                     f"Tipo: {tipo} | KM: {dist:.0f} km | Fat: R$ {_fmt_virgula(fat)}"
                 ),
                 markup=True,
-                font_size="12.5sp",
+                font_size=sp(13),
                 halign="left",
                 valign="middle",
             )
@@ -834,8 +921,8 @@ class ControleFreteApp(App):
                 text="Editar",
                 cor_fundo=(0.145, 0.388, 0.922, 1),
                 size_hint=(None, None),
-                size=(66, 36),
-                font_size="12.5sp",
+                size=(dp(68), dp(38)),
+                font_size=sp(13),
                 pos_hint={"center_y": 0.5},
             )
             btn_edit.bind(on_press=lambda _, i=idx: self.iniciar_edicao(i))
@@ -844,8 +931,8 @@ class ControleFreteApp(App):
                 text="Excluir",
                 cor_fundo=(0.860, 0.240, 0.240, 1),
                 size_hint=(None, None),
-                size=(68, 36),
-                font_size="12.5sp",
+                size=(dp(70), dp(38)),
+                font_size=sp(13),
                 pos_hint={"center_y": 0.5},
             )
             btn_del.bind(on_press=lambda _, i=idx: self.excluir_item("viagens", i))
@@ -859,13 +946,13 @@ class ControleFreteApp(App):
             litros = float(d.get("litros", 0))
             linha_d = CardBox(
                 bg_color=(0.055, 0.067, 0.094, 1),
-                border_color=(0.180, 0.212, 0.275, 1),
-                radius=10,
+                border_color=(0.185, 0.218, 0.282, 1),
+                radius=dp(10),
                 orientation="horizontal",
-                padding=[12, 10, 12, 10],
-                spacing=8,
+                padding=[dp(12), dp(10), dp(12), dp(10)],
+                spacing=dp(8),
                 size_hint_y=None,
-                height=62,
+                height=dp(66),
             )
 
             info_d = Label(
@@ -874,7 +961,7 @@ class ControleFreteApp(App):
                     f"Litros: {_fmt_virgula(litros)} L"
                 ),
                 markup=True,
-                font_size="12.5sp",
+                font_size=sp(13),
                 halign="left",
                 valign="middle",
             )
@@ -884,8 +971,8 @@ class ControleFreteApp(App):
                 text="Excluir",
                 cor_fundo=(0.860, 0.240, 0.240, 1),
                 size_hint=(None, None),
-                size=(68, 36),
-                font_size="12.5sp",
+                size=(dp(70), dp(38)),
+                font_size=sp(13),
                 pos_hint={"center_y": 0.5},
             )
             btn_del_d.bind(on_press=lambda _, i=idx: self.excluir_item("diesel", i))
