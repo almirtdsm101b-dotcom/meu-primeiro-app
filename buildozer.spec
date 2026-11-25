@@ -23,11 +23,10 @@ android.permissions =
 
 android.api = 35
 
-android.minapi = 23
+android.minapi = 24
 
 android.archs = arm64-v8a
 
-# Aceitar licencas do Android SDK
 android.accept_sdk_license = True
 
 [buildozer]
