@@ -13,7 +13,7 @@ source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1
 
-requirements = python3,kivy
+requirements = python3,kivy,charset-normalizer==2.1.1
 
 orientation = portrait
 
@@ -28,6 +28,8 @@ android.minapi = 24
 android.archs = arm64-v8a
 
 android.accept_sdk_license = True
+
+p4a.branch = develop
 
 [buildozer]
 
